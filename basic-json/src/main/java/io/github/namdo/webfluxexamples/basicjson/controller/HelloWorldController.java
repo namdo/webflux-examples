@@ -1,0 +1,20 @@
+package io.github.namdo.webfluxexamples.basicjson.controller;
+
+import reactor.core.publisher.Flux;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/hello")
+public class HelloWorldController {
+
+  @GetMapping
+  public Flux<Message> sayHelloWorld() {
+    return Flux.just(
+        Message.builder().content("Hello").build(),
+        Message.builder().content("World").build());
+  }
+
+}
