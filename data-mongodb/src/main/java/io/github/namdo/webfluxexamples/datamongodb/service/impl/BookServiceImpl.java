@@ -22,13 +22,13 @@ public class BookServiceImpl implements BookService {
   }
 
   @Override
-  public Flux<Book> findAll(final Pageable pageable) {
-    return bookRepository.findAllBy(pageable);
+  public Flux<Book> findAll() {
+    return bookRepository.findAll();
   }
 
   @Override
-  public Mono<Long> countAll() {
-    return bookRepository.count();
+  public Flux<Book> findAllByPagination(final Pageable pageable) {
+    return bookRepository.findAllBy(pageable);
   }
 
   @Override

@@ -1,5 +1,8 @@
 package io.github.namdo.webfluxexamples.datamongodb.web;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 import io.github.namdo.webfluxexamples.datamongodb.domain.Book;
 import io.github.namdo.webfluxexamples.datamongodb.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +26,7 @@ public class BookController {
   @PostMapping
   @ResponseStatus(code = HttpStatus.CREATED)
   public Mono<Book> createBook(@RequestBody final Book book) {
-    if (book.getId() != null) {
+    if (nonNull(book.getId())) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
     return bookService.save(book);
@@ -32,16 +35,21 @@ public class BookController {
   @PutMapping
   @ResponseStatus(code = HttpStatus.CREATED)
   public Mono<Book> updateBook(@RequestBody final Book book) {
-    if (book.getId() == null) {
+    if (isNull(book.getId())) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
     return bookService.save(book)
         .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)));
   }
 
+  @GetMapping("/all")
+  public Flux<Book> getAllBooks() {
+    return bookService.findAll();
+  }
+
   @GetMapping
-  public Flux<Book> getAllBooks(@RequestParam final int page, @RequestParam final int size) {
-    return bookService.findAll(PageRequest.of(page, size));
+  public Flux<Book> getBooksByPagination(@RequestParam final int page, @RequestParam final int size) {
+    return bookService.findAllByPagination(PageRequest.of(page, size));
   }
 
   @GetMapping("/{id}")
