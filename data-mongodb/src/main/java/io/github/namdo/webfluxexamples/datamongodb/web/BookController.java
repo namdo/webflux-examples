@@ -1,5 +1,6 @@
 package io.github.namdo.webfluxexamples.datamongodb.web;
 
+import static io.github.namdo.webfluxexamples.datamongodb.utils.DataMongodbConstants.BOOKS_PATH;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping(BOOKS_PATH)
 @Log4j2
 @RequiredArgsConstructor
 public class BookController {

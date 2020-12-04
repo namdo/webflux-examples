@@ -12,4 +12,6 @@ public interface BookRepository extends ReactiveMongoRepository<Book, String> {
 
   Flux<Book> findAllBy(Pageable pageable);
 
+  Flux<Book> findAllByTitleEquals(String title);
+
 }

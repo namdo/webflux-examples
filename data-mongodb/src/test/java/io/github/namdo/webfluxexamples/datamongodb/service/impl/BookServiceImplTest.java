@@ -141,12 +141,6 @@ class BookServiceImplTest {
 
   @Test
   void testDelete() {
-    // Setup
-    final Book book = Book.builder()
-        .id(BOOK_ID_1)
-        .title(TITLE)
-        .build();
-
     when(bookRepository.deleteById(BOOK_ID_1)).thenReturn(Mono.empty());
 
     // Execute
@@ -155,6 +149,7 @@ class BookServiceImplTest {
     // Verify
     StepVerifier.create(voidMono)
         .verifyComplete();
+    
     verify(bookRepository).deleteById(BOOK_ID_1);
   }
 }
