@@ -31,7 +31,7 @@ class BookRepositoryTest {
   public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer(DockerImageName.parse("postgres").withTag("9.6.12"));
 
   @DynamicPropertySource
-  static void mongoDbProperties(final DynamicPropertyRegistry registry) {
+  static void postgresProperties(final DynamicPropertyRegistry registry) {
     registry.add("spring.r2dbc.url", () -> "r2dbc:postgresql://"
         + postgreSQLContainer.getHost() + ":" + postgreSQLContainer.getFirstMappedPort()
         + "/" + postgreSQLContainer.getDatabaseName());
