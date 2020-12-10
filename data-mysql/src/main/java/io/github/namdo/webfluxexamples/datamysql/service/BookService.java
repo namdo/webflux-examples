@@ -1,6 +1,6 @@
-package io.github.namdo.webfluxexamples.datapgr2dbc.service;
+package io.github.namdo.webfluxexamples.datamysql.service;
 
-import io.github.namdo.webfluxexamples.datapgr2dbc.domain.Book;
+import io.github.namdo.webfluxexamples.datamysql.domain.Book;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

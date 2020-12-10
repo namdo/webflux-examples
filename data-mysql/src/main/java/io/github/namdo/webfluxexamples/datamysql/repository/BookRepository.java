@@ -1,6 +1,6 @@
-package io.github.namdo.webfluxexamples.datapgr2dbc.repository;
+package io.github.namdo.webfluxexamples.datamysql.repository;
 
-import io.github.namdo.webfluxexamples.datapgr2dbc.domain.Book;
+import io.github.namdo.webfluxexamples.datamysql.domain.Book;
 import reactor.core.publisher.Flux;
 
 import org.springframework.data.domain.Pageable;

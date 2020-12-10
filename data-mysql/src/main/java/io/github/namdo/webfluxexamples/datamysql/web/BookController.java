@@ -1,11 +1,11 @@
-package io.github.namdo.webfluxexamples.datapgr2dbc.web;
+package io.github.namdo.webfluxexamples.datamysql.web;
 
-import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.DataMongodbConstants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datamysql.utils.DataMongodbConstants.BOOKS_PATH;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import io.github.namdo.webfluxexamples.datapgr2dbc.domain.Book;
-import io.github.namdo.webfluxexamples.datapgr2dbc.service.BookService;
+import io.github.namdo.webfluxexamples.datamysql.domain.Book;
+import io.github.namdo.webfluxexamples.datamysql.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Flux;

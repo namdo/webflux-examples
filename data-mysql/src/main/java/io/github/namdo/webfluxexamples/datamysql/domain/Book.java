@@ -1,4 +1,4 @@
-package io.github.namdo.webfluxexamples.datapgr2dbc.domain;
+package io.github.namdo.webfluxexamples.datamysql.domain;
 
 import lombok.Builder;
 import lombok.Data;
