@@ -1,16 +1,16 @@
-package io.github.namdo.webfluxexamples.datamysql.web;
+package io.github.namdo.webfluxexamples.datah2.web;
 
-import static io.github.namdo.webfluxexamples.datamysql.utils.TestConstants.BOOK_ID_1;
-import static io.github.namdo.webfluxexamples.datamysql.utils.TestConstants.BOOK_ID_2;
-import static io.github.namdo.webfluxexamples.datamysql.utils.TestConstants.PAGE;
-import static io.github.namdo.webfluxexamples.datamysql.utils.TestConstants.SIZE;
-import static io.github.namdo.webfluxexamples.datamysql.utils.TestConstants.TITLE;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.BOOK_ID_1;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.BOOK_ID_2;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.PAGE;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.SIZE;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.TITLE;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import io.github.namdo.webfluxexamples.datamysql.domain.Book;
-import io.github.namdo.webfluxexamples.datamysql.service.BookService;
+import io.github.namdo.webfluxexamples.datah2.domain.Book;
+import io.github.namdo.webfluxexamples.datah2.service.BookService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;

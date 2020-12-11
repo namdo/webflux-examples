@@ -1,8 +1,8 @@
-package io.github.namdo.webfluxexamples.datamysql.service.impl;
+package io.github.namdo.webfluxexamples.datah2.service.impl;
 
-import io.github.namdo.webfluxexamples.datamysql.domain.Book;
-import io.github.namdo.webfluxexamples.datamysql.repository.BookRepository;
-import io.github.namdo.webfluxexamples.datamysql.service.BookService;
+import io.github.namdo.webfluxexamples.datah2.domain.Book;
+import io.github.namdo.webfluxexamples.datah2.repository.BookRepository;
+import io.github.namdo.webfluxexamples.datah2.service.BookService;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

@@ -1,15 +1,15 @@
-package io.github.namdo.webfluxexamples.datamysql.integration;
+package io.github.namdo.webfluxexamples.datah2.integration;
 
-import static io.github.namdo.webfluxexamples.datamysql.utils.DataMongodbConstants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datah2.utils.DataMongodbConstants.BOOKS_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import io.github.namdo.webfluxexamples.datamysql.DataH2Application;
-import io.github.namdo.webfluxexamples.datamysql.domain.Book;
-import io.github.namdo.webfluxexamples.datamysql.repository.BookRepository;
+import io.github.namdo.webfluxexamples.datah2.DataH2Application;
+import io.github.namdo.webfluxexamples.datah2.domain.Book;
+import io.github.namdo.webfluxexamples.datah2.repository.BookRepository;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 

@@ -1,8 +1,8 @@
-package io.github.namdo.webfluxexamples.datamysql.repository;
+package io.github.namdo.webfluxexamples.datah2.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.namdo.webfluxexamples.datamysql.domain.Book;
+import io.github.namdo.webfluxexamples.datah2.domain.Book;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

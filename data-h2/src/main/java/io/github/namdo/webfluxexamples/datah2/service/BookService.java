@@ -1,6 +1,6 @@
-package io.github.namdo.webfluxexamples.datamysql.service;
+package io.github.namdo.webfluxexamples.datah2.service;
 
-import io.github.namdo.webfluxexamples.datamysql.domain.Book;
+import io.github.namdo.webfluxexamples.datah2.domain.Book;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

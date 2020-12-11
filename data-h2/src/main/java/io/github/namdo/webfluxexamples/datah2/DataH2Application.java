@@ -1,4 +1,4 @@
-package io.github.namdo.webfluxexamples.datamysql;
+package io.github.namdo.webfluxexamples.datah2;
 
 import io.r2dbc.spi.ConnectionFactory;
 

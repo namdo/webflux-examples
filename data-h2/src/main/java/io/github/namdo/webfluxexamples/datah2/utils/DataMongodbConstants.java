@@ -1,4 +1,4 @@
-package io.github.namdo.webfluxexamples.datamysql.utils;
+package io.github.namdo.webfluxexamples.datah2.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
