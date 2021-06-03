@@ -9,10 +9,10 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>io.github.namdo.webfluxexamples</groupId>
-  <artifactId>basic-tomcat</artifactId>
+  <artifactId>data-redis</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>basic-tomcat</name>
-  <description>Demo project for Spring Boot WebFlux using Tomcat</description>
+  <name>data-redis</name>
+  <description>Demo project for Spring Boot</description>
 
   <properties>
     <java.version>11</java.version>
@@ -21,18 +21,17 @@
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webflux</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-starter-reactor-netty</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-tomcat</artifactId>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-webflux-ui</artifactId>
+      <version>1.5.0</version>
     </dependency>
 
     <dependency>
@@ -41,6 +40,13 @@
       <scope>runtime</scope>
       <optional>true</optional>
     </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
@@ -54,7 +60,6 @@
   </dependencies>
 
   <build>
-    <defaultGoal>spring-boot:run</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
