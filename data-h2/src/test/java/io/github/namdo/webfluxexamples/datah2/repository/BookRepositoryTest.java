@@ -16,7 +16,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @DataR2dbcTest
 @Log4j2
-@Testcontainers
 class BookRepositoryTest {
 
   private final Integer COUNT = 10;

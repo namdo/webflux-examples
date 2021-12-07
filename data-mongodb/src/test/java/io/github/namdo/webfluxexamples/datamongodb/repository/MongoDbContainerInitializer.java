@@ -11,7 +11,7 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
 @Log4j2
-class MongodbContainerInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+class MongoDbContainerInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
   @Override
   public void initialize(final ConfigurableApplicationContext configurableApplicationContext) {
     final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo").withTag("4.0.10"));

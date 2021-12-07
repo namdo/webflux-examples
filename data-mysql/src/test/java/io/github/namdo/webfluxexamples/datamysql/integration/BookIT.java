@@ -1,6 +1,6 @@
 package io.github.namdo.webfluxexamples.datamysql.integration;
 
-import static io.github.namdo.webfluxexamples.datamysql.utils.DataMongodbConstants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datamysql.utils.Constants.BOOKS_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;

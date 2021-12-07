@@ -1,8 +1,8 @@
-package io.github.namdo.webfluxexamples.datamongodb.service.impl;
+package io.github.namdo.webfluxexamples.dataredis.service.impl;
 
-import io.github.namdo.webfluxexamples.datamongodb.domain.Book;
-import io.github.namdo.webfluxexamples.datamongodb.repository.BookRepository;
-import io.github.namdo.webfluxexamples.datamongodb.service.BookService;
+import io.github.namdo.webfluxexamples.dataredis.service.BookService;
+import io.github.namdo.webfluxexamples.dataredis.domain.Book;
+import io.github.namdo.webfluxexamples.dataredis.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

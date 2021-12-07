@@ -1,6 +1,6 @@
-package io.github.namdo.webfluxexamples.datamongodb.service;
+package io.github.namdo.webfluxexamples.dataredis.service;
 
-import io.github.namdo.webfluxexamples.datamongodb.domain.Book;
+import io.github.namdo.webfluxexamples.dataredis.domain.Book;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

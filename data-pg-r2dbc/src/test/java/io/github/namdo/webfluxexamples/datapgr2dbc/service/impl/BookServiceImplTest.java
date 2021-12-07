@@ -1,4 +1,4 @@
-package io.github.namdo.webfluxexamples.datapgr2dbc.impl;
+package io.github.namdo.webfluxexamples.datapgr2dbc.service.impl;
 
 import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.BOOK_ID_1;
 import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.BOOK_ID_2;

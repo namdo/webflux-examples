@@ -1,6 +1,6 @@
 package io.github.namdo.webfluxexamples.datah2.integration;
 
-import static io.github.namdo.webfluxexamples.datah2.utils.DataMongodbConstants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datah2.utils.Constants.BOOKS_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(classes = DataH2Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
 class BookIT {
 
   private static ObjectMapper OBJECT_MAPPER;

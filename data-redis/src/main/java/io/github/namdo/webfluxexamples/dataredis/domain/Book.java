@@ -1,4 +1,4 @@
-package io.github.namdo.webfluxexamples.datamongodb.domain;
+package io.github.namdo.webfluxexamples.dataredis.domain;
 
 import lombok.Builder;
 import lombok.Data;

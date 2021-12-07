@@ -1,6 +1,6 @@
 package io.github.namdo.webfluxexamples.datapgr2dbc.web;
 
-import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.DataMongodbConstants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.Constants.BOOKS_PATH;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 

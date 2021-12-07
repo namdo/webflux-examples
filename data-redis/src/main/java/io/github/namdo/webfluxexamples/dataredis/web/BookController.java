@@ -1,11 +1,11 @@
-package io.github.namdo.webfluxexamples.datamongodb.web;
+package io.github.namdo.webfluxexamples.dataredis.web;
 
-import static io.github.namdo.webfluxexamples.datamongodb.utils.DataMongodbConstants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.dataredis.utils.Constants.BOOKS_PATH;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import io.github.namdo.webfluxexamples.datamongodb.domain.Book;
-import io.github.namdo.webfluxexamples.datamongodb.service.BookService;
+import io.github.namdo.webfluxexamples.dataredis.domain.Book;
+import io.github.namdo.webfluxexamples.dataredis.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Flux;

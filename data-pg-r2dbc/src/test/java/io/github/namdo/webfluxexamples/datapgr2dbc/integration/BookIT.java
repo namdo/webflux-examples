@@ -1,6 +1,6 @@
 package io.github.namdo.webfluxexamples.datapgr2dbc.integration;
 
-import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.DataMongodbConstants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.Constants.BOOKS_PATH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
