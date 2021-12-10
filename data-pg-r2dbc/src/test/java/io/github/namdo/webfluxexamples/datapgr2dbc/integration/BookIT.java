@@ -41,15 +41,15 @@ class BookIT {
   private static ObjectMapper OBJECT_MAPPER;
 
   @Container
-  public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer(DockerImageName.parse("postgres").withTag("14.1"));
+  public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer<>(DockerImageName.parse("postgres").withTag("14.1"));
 
   @DynamicPropertySource
   static void postgresProperties(final DynamicPropertyRegistry registry) {
     registry.add("spring.r2dbc.url", () -> "r2dbc:postgresql://"
         + postgreSQLContainer.getHost() + ":" + postgreSQLContainer.getFirstMappedPort()
         + "/" + postgreSQLContainer.getDatabaseName());
-    registry.add("spring.r2dbc.username", () -> postgreSQLContainer.getUsername());
-    registry.add("spring.r2dbc.password", () -> postgreSQLContainer.getPassword());
+    registry.add("spring.r2dbc.username", postgreSQLContainer::getUsername);
+    registry.add("spring.r2dbc.password", postgreSQLContainer::getPassword);
   }
 
   @Autowired

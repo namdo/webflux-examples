@@ -28,15 +28,15 @@ import org.testcontainers.utility.DockerImageName;
 class BookRepositoryTest {
 
   @Container
-  public static MySQLContainer mySQLContainer = new MySQLContainer(DockerImageName.parse("mysql").withTag("8.0.27"));
+  public static MySQLContainer mySQLContainer = new MySQLContainer<>(DockerImageName.parse("mysql").withTag("8.0.27"));
 
   @DynamicPropertySource
   static void mysqlProperties(final DynamicPropertyRegistry registry) {
     registry.add("spring.r2dbc.url", () -> "r2dbc:mysql://"
         + mySQLContainer.getHost() + ":" + mySQLContainer.getFirstMappedPort()
         + "/" + mySQLContainer.getDatabaseName());
-    registry.add("spring.r2dbc.username", () -> mySQLContainer.getUsername());
-    registry.add("spring.r2dbc.password", () -> mySQLContainer.getPassword());
+    registry.add("spring.r2dbc.username", mySQLContainer::getUsername);
+    registry.add("spring.r2dbc.password", mySQLContainer::getPassword);
   }
 
   private final Integer COUNT = 10;
@@ -49,9 +49,9 @@ class BookRepositoryTest {
   @BeforeEach
   public void setUp() {
     bookRepository.deleteAll().thenMany(Flux.range(1, COUNT).map(i -> Book.builder()
-        .title("A Book " + i)
-        .build())
-        .flatMap(bookRepository::save))
+                .title("A Book " + i)
+                .build())
+            .flatMap(bookRepository::save))
         .collectList().block();
   }
 
