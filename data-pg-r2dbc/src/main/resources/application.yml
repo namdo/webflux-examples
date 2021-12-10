@@ -3,3 +3,10 @@ spring:
     url: r2dbc:postgresql://localhost/postgres
     username: postgres
     password: password
+  jpa:
+    hibernate:
+      ddl-auto: none
+  sql:
+    init:
+      schema-locations: schema.sql
+      mode: always
