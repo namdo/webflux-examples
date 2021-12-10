@@ -28,7 +28,7 @@ import org.testcontainers.utility.DockerImageName;
 class BookRepositoryTest {
 
   @Container
-  public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer(DockerImageName.parse("postgres").withTag("9.6.12"));
+  public static PostgreSQLContainer postgreSQLContainer = new PostgreSQLContainer(DockerImageName.parse("postgres").withTag("14.1"));
 
   @DynamicPropertySource
   static void postgresProperties(final DynamicPropertyRegistry registry) {

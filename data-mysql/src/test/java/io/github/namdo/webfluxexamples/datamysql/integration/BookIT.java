@@ -41,7 +41,7 @@ class BookIT {
   private static ObjectMapper OBJECT_MAPPER;
 
   @Container
-  public static MySQLContainer mySQLContainer = new MySQLContainer(DockerImageName.parse("mysql").withTag("5.7.22"));
+  public static MySQLContainer mySQLContainer = new MySQLContainer(DockerImageName.parse("mysql").withTag("8.0.27"));
 
   @DynamicPropertySource
   static void mysqlProperties(final DynamicPropertyRegistry registry) {
