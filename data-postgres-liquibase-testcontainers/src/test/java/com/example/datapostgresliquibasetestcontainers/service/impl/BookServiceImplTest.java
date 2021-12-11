@@ -14,29 +14,24 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 
 import com.example.datapostgresliquibasetestcontainers.domain.Book;
 import com.example.datapostgresliquibasetestcontainers.repository.BookRepository;
-import com.example.datapostgresliquibasetestcontainers.service.BookService;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
 
-  private BookService bookService;
+  @InjectMocks
+  private BookServiceImpl bookService;
 
   @Mock
   private BookRepository bookRepository;
-
-  @BeforeEach
-  public void setUp() {
-    bookService = new BookServiceImpl(bookRepository);
-  }
 
   @AfterEach
   public void tearDown() {

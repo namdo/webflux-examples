@@ -11,16 +11,14 @@ import static org.mockito.Mockito.when;
 
 import io.github.namdo.webfluxexamples.datamysql.domain.Book;
 import io.github.namdo.webfluxexamples.datamysql.repository.BookRepository;
-import io.github.namdo.webfluxexamples.datamysql.service.BookService;
-import io.github.namdo.webfluxexamples.datamysql.service.impl.BookServiceImpl;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
@@ -28,15 +26,11 @@ import org.springframework.data.domain.PageRequest;
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
 
-  private BookService bookService;
+  @InjectMocks
+  private BookServiceImpl bookService;
 
   @Mock
   private BookRepository bookRepository;
-
-  @BeforeEach
-  public void setUp() {
-    bookService = new BookServiceImpl(bookRepository);
-  }
 
   @AfterEach
   public void tearDown() {

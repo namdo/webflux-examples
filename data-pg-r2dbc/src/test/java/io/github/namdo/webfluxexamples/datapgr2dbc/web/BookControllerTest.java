@@ -16,9 +16,9 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
@@ -27,15 +27,11 @@ import org.springframework.web.server.ResponseStatusException;
 @ExtendWith(MockitoExtension.class)
 class BookControllerTest {
 
+  @InjectMocks
   private BookController bookController;
 
   @Mock
   private BookService bookService;
-
-  @BeforeEach
-  public void setUp() {
-    bookController = new BookController(bookService);
-  }
 
   @AfterEach
   public void tearDown() {
