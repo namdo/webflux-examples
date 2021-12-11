@@ -3,7 +3,6 @@ package io.github.namdo.webfluxexamples.datamysql.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.namdo.webfluxexamples.datamysql.domain.Book;
-import io.github.namdo.webfluxexamples.datamysql.utils.DatabaseInitializer;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -24,7 +22,6 @@ import org.testcontainers.utility.DockerImageName;
 @DataR2dbcTest
 @Log4j2
 @Testcontainers
-@Import(DatabaseInitializer.class)
 class BookRepositoryTest {
 
   @Container
