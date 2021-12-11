@@ -42,15 +42,11 @@ class BookIT {
 
   @DynamicPropertySource
   static void postgresProperties(final DynamicPropertyRegistry registry) {
-    registry.add("spring.r2dbc.url", () -> "r2dbc:postgresql://"
-        + postgreSQLContainer.getHost() + ":" + postgreSQLContainer.getFirstMappedPort()
-        + "/" + postgreSQLContainer.getDatabaseName());
+    registry.add("spring.r2dbc.url", () -> postgreSQLContainer.getJdbcUrl().replace("jdbc", "r2dbc"));
     registry.add("spring.r2dbc.username", postgreSQLContainer::getUsername);
     registry.add("spring.r2dbc.password", postgreSQLContainer::getPassword);
 
-    registry.add("spring.liquibase.url", () -> "jdbc:postgresql://"
-        + postgreSQLContainer.getHost() + ":" + postgreSQLContainer.getFirstMappedPort()
-        + "/" + postgreSQLContainer.getDatabaseName());
+    registry.add("spring.liquibase.url", () -> postgreSQLContainer.getJdbcUrl());
     registry.add("spring.liquibase.user", postgreSQLContainer::getUsername);
     registry.add("spring.liquibase.password", postgreSQLContainer::getPassword);
   }
