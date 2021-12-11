@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import io.github.namdo.webfluxexamples.datapgr2dbc.DataPgR2dbcApplication;
 import io.github.namdo.webfluxexamples.datapgr2dbc.domain.Book;
 import io.github.namdo.webfluxexamples.datapgr2dbc.repository.BookRepository;
-import io.github.namdo.webfluxexamples.datapgr2dbc.utils.DatabaseInitializer;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -19,7 +18,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -33,7 +31,6 @@ import org.testcontainers.utility.DockerImageName;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Import(DatabaseInitializer.class)
 @SpringBootTest(classes = DataPgR2dbcApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class BookIT {
@@ -67,6 +64,19 @@ class BookIT {
   @BeforeEach
   public void setUp() {
     bookRepository.deleteAll().block();
+  }
+
+  /**
+   * Tests health check
+   **/
+  @Test
+  void testHealthCheck() {
+    webTestClient.get()
+        .uri("/actuator/health")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Void.class);
   }
 
   @Test

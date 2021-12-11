@@ -3,7 +3,6 @@ package io.github.namdo.webfluxexamples.datapgr2dbc.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.namdo.webfluxexamples.datapgr2dbc.domain.Book;
-import io.github.namdo.webfluxexamples.datapgr2dbc.utils.DatabaseInitializer;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -24,7 +22,6 @@ import org.testcontainers.utility.DockerImageName;
 @DataR2dbcTest
 @Log4j2
 @Testcontainers
-@Import(DatabaseInitializer.class)
 class BookRepositoryTest {
 
   @Container
@@ -49,9 +46,9 @@ class BookRepositoryTest {
   @BeforeEach
   public void setUp() {
     bookRepository.deleteAll().thenMany(Flux.range(1, COUNT).map(i -> Book.builder()
-        .title("A Book " + i)
-        .build())
-        .flatMap(bookRepository::save))
+                .title("A Book " + i)
+                .build())
+            .flatMap(bookRepository::save))
         .collectList().block();
   }
 
