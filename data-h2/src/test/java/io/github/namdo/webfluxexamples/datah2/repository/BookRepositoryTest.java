@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @DataR2dbcTest
 @Log4j2
@@ -28,9 +27,9 @@ class BookRepositoryTest {
   @BeforeEach
   public void setUp() {
     bookRepository.deleteAll().thenMany(Flux.range(1, COUNT).map(i -> Book.builder()
-        .title("A Book " + i)
-        .build())
-        .flatMap(bookRepository::save))
+                .title("A Book " + i)
+                .build())
+            .flatMap(bookRepository::save))
         .collectList().block();
   }
 

@@ -10,9 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.datapostgresliquibasetestcontainers.domain.Book;
 import com.example.datapostgresliquibasetestcontainers.repository.BookRepository;
 import com.example.datapostgresliquibasetestcontainers.service.BookService;
+import com.example.datapostgresliquibasetestcontainers.service.dto.BookDTO;
+import com.example.datapostgresliquibasetestcontainers.service.mapper.BookMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -21,39 +22,45 @@ public class BookServiceImpl implements BookService {
 
   private final BookRepository bookRepository;
 
+  private final BookMapper bookMapper;
+
   @Override
-  public Mono<Book> save(final Book book) {
-    return bookRepository.save(book);
+  public Mono<BookDTO> save(final BookDTO bookDTO) {
+    return bookRepository.save(bookMapper.toEntity(bookDTO))
+        .map(bookMapper::toDto);
   }
 
   @Override
-  public Mono<Book> partialUpdate(Book book) {
+  public Mono<BookDTO> partialUpdate(BookDTO bookDTO) {
     return bookRepository
-        .findById(book.getId())
+        .findById(bookDTO.getId())
         .map(existingBook -> {
-          if (nonNull(book.getTitle())) {
-            existingBook.setTitle(book.getTitle());
+          if (nonNull(bookDTO.getTitle())) {
+            existingBook.setTitle(bookDTO.getTitle());
           }
 
-          if (nonNull(book.getDescription())) {
-            existingBook.setDescription(book.getTitle());
+          if (nonNull(bookDTO.getDescription())) {
+            existingBook.setDescription(bookDTO.getTitle());
           }
 
           return existingBook;
         })
-        .flatMap(bookRepository::save);
+        .flatMap(bookRepository::save)
+        .map(bookMapper::toDto);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Flux<Book> findAll() {
-    return bookRepository.findAll();
+  public Flux<BookDTO> findAll() {
+    return bookRepository.findAll()
+        .map(bookMapper::toDto);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public Flux<Book> findAllByPagination(final Pageable pageable) {
-    return bookRepository.findAllBy(pageable);
+  public Flux<BookDTO> findAllByPagination(final Pageable pageable) {
+    return bookRepository.findAllBy(pageable)
+        .map(bookMapper::toDto);
   }
 
   @Override
@@ -64,13 +71,14 @@ public class BookServiceImpl implements BookService {
 
   @Override
   @Transactional(readOnly = true)
-  public Mono<Book> findOne(final Integer id) {
-    return bookRepository.findById(id);
+  public Mono<BookDTO> findOne(final Integer id) {
+    return bookRepository.findById(id)
+        .map(bookMapper::toDto);
   }
 
   @Override
   public Mono<Void> delete(final Integer id) {
     return bookRepository.deleteById(id);
   }
-  
+
 }

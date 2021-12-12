@@ -17,8 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.datapostgresliquibasetestcontainers.domain.Book;
 import com.example.datapostgresliquibasetestcontainers.service.BookService;
+import com.example.datapostgresliquibasetestcontainers.service.dto.BookDTO;
 
 @RestController
 @RequestMapping(BOOKS_PATH)
@@ -29,7 +29,7 @@ public class BookController {
   private final BookService bookService;
 
   @PostMapping
-  public Mono<ResponseEntity<Book>> createBook(@RequestBody final Book book) {
+  public Mono<ResponseEntity<BookDTO>> createBook(@RequestBody final BookDTO book) {
     if (nonNull(book.getId())) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
@@ -38,7 +38,7 @@ public class BookController {
   }
 
   @PutMapping("/{id}")
-  public Mono<ResponseEntity<Book>> updateBook(@PathVariable(value = "id", required = false) final Integer id, @RequestBody final Book book) {
+  public Mono<ResponseEntity<BookDTO>> updateBook(@PathVariable(value = "id", required = false) final Integer id, @RequestBody final BookDTO book) {
     if (isNull(book.getId())) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
@@ -65,7 +65,7 @@ public class BookController {
   }
 
   @PatchMapping("/{id}")
-  public Mono<ResponseEntity<Book>> partialUpdateBook(@PathVariable(value = "id", required = false) final Integer id, @RequestBody final Book book) {
+  public Mono<ResponseEntity<BookDTO>> partialUpdateBook(@PathVariable(value = "id", required = false) final Integer id, @RequestBody final BookDTO book) {
     if (isNull(book.getId())) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
@@ -80,7 +80,7 @@ public class BookController {
             return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
           }
 
-          Mono<Book> result = bookService.partialUpdate(book);
+          Mono<BookDTO> result = bookService.partialUpdate(book);
 
           return result
               .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
@@ -93,17 +93,17 @@ public class BookController {
   }
 
   @GetMapping("/all")
-  public Flux<Book> getAllBooks() {
+  public Flux<BookDTO> getAllBooks() {
     return bookService.findAll();
   }
 
   @GetMapping
-  public Flux<Book> getBooksByPagination(@RequestParam final int page, @RequestParam final int size) {
+  public Flux<BookDTO> getBooksByPagination(@RequestParam final int page, @RequestParam final int size) {
     return bookService.findAllByPagination(PageRequest.of(page, size));
   }
 
   @GetMapping("/{id}")
-  public Mono<ResponseEntity<Book>> getBook(@PathVariable final Integer id) {
+  public Mono<ResponseEntity<BookDTO>> getBook(@PathVariable final Integer id) {
     return bookService.findOne(id)
         .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
         .map(response -> ResponseEntity.ok().body(response));

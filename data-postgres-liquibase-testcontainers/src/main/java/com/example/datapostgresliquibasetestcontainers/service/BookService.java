@@ -5,21 +5,21 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.data.domain.Pageable;
 
-import com.example.datapostgresliquibasetestcontainers.domain.Book;
+import com.example.datapostgresliquibasetestcontainers.service.dto.BookDTO;
 
 public interface BookService {
 
-  Mono<Book> save(Book book);
+  Mono<BookDTO> save(BookDTO bookDTO);
 
-  Mono<Book> partialUpdate(Book book);
+  Mono<BookDTO> partialUpdate(BookDTO bookDTO);
 
-  Flux<Book> findAll();
+  Flux<BookDTO> findAll();
 
-  Flux<Book> findAllByPagination(Pageable pageable);
+  Flux<BookDTO> findAllByPagination(Pageable pageable);
 
   Mono<Boolean> existsById(Integer id);
 
-  Mono<Book> findOne(Integer id);
+  Mono<BookDTO> findOne(Integer id);
 
   Mono<Void> delete(Integer id);
 }

@@ -5,6 +5,7 @@ import static com.example.datapostgresliquibasetestcontainers.utils.TestConstant
 import static com.example.datapostgresliquibasetestcontainers.utils.TestConstants.PAGE;
 import static com.example.datapostgresliquibasetestcontainers.utils.TestConstants.SIZE;
 import static com.example.datapostgresliquibasetestcontainers.utils.TestConstants.TITLE;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -14,24 +15,31 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 
 import com.example.datapostgresliquibasetestcontainers.domain.Book;
 import com.example.datapostgresliquibasetestcontainers.repository.BookRepository;
+import com.example.datapostgresliquibasetestcontainers.service.dto.BookDTO;
+import com.example.datapostgresliquibasetestcontainers.service.mapper.BookMapper;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
 
-  @InjectMocks
   private BookServiceImpl bookService;
 
   @Mock
   private BookRepository bookRepository;
+
+  @BeforeEach
+  public void setUp() {
+    BookMapper bookMapper = new BookMapper();
+    bookService = new BookServiceImpl(bookRepository, bookMapper);
+  }
 
   @AfterEach
   public void tearDown() {
@@ -41,31 +49,48 @@ class BookServiceImplTest {
   @Test
   void testSave() {
     // Setup
+    final BookDTO bookDTO = BookDTO.builder()
+        .title(TITLE)
+        .build();
+
     final Book book = Book.builder()
         .title(TITLE)
         .build();
 
-    final Book expected = Book.builder()
+    final Book savedBook = Book.builder()
         .title(TITLE)
         .id(BOOK_ID_1)
         .build();
 
-    when(bookRepository.save(book)).thenReturn(Mono.just(expected));
+    final BookDTO expected = BookDTO.builder()
+        .title(TITLE)
+        .id(BOOK_ID_1)
+        .build();
+
+    when(bookRepository.save(any(Book.class))).thenReturn(Mono.just(savedBook));
 
     // Execute
-    final Mono<Book> actualMono = bookService.save(book);
+    final Mono<BookDTO> actualMono = bookService.save(bookDTO);
 
     // Verify
     StepVerifier.create(actualMono)
         .expectNext(expected)
         .verifyComplete();
-
-    verify(bookRepository).save(book);
   }
 
   @Test
   void testFindAll() {
     // Setup
+    final BookDTO bookDTO1 = BookDTO.builder()
+        .id(BOOK_ID_1)
+        .title(TITLE)
+        .build();
+
+    final BookDTO bookDTO2 = BookDTO.builder()
+        .id(BOOK_ID_2)
+        .title(TITLE)
+        .build();
+
     final Book book1 = Book.builder()
         .id(BOOK_ID_1)
         .title(TITLE)
@@ -79,19 +104,30 @@ class BookServiceImplTest {
     when(bookRepository.findAll()).thenReturn(Flux.just(book1, book2));
 
     // Execute
-    final Flux<Book> bookFlux = bookService.findAll();
+    final Flux<BookDTO> bookFlux = bookService.findAll();
 
     // Verify
     StepVerifier.create(bookFlux)
-        .expectNext(book1)
-        .expectNext(book2)
+        .expectNext(bookDTO1)
+        .expectNext(bookDTO2)
         .verifyComplete();
+
     verify(bookRepository).findAll();
   }
 
   @Test
   void testFindAllByPagination() {
     // Setup
+    final BookDTO bookDTO1 = BookDTO.builder()
+        .id(BOOK_ID_1)
+        .title(TITLE)
+        .build();
+
+    final BookDTO bookDTO2 = BookDTO.builder()
+        .id(BOOK_ID_2)
+        .title(TITLE)
+        .build();
+
     final Book book1 = Book.builder()
         .id(BOOK_ID_1)
         .title(TITLE)
@@ -105,12 +141,12 @@ class BookServiceImplTest {
     when(bookRepository.findAllBy(PageRequest.of(PAGE, SIZE))).thenReturn(Flux.just(book1, book2));
 
     // Execute
-    final Flux<Book> bookFlux = bookService.findAllByPagination(PageRequest.of(PAGE, SIZE));
+    final Flux<BookDTO> bookFlux = bookService.findAllByPagination(PageRequest.of(PAGE, SIZE));
 
     // Verify
     StepVerifier.create(bookFlux)
-        .expectNext(book1)
-        .expectNext(book2)
+        .expectNext(bookDTO1)
+        .expectNext(bookDTO2)
         .verifyComplete();
     verify(bookRepository).findAllBy(PageRequest.of(PAGE, SIZE));
   }
@@ -123,14 +159,19 @@ class BookServiceImplTest {
         .title(TITLE)
         .build();
 
+    final BookDTO bookDTO = BookDTO.builder()
+        .id(BOOK_ID_1)
+        .title(TITLE)
+        .build();
+
     when(bookRepository.findById(BOOK_ID_1)).thenReturn(Mono.just(book));
 
     // Execute
-    final Mono<Book> bookMono = bookService.findOne(BOOK_ID_1);
+    final Mono<BookDTO> bookMono = bookService.findOne(BOOK_ID_1);
 
     // Verify
     StepVerifier.create(bookMono)
-        .expectNext(book)
+        .expectNext(bookDTO)
         .verifyComplete();
     verify(bookRepository).findById(BOOK_ID_1);
   }

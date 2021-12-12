@@ -1,6 +1,6 @@
 package io.github.namdo.webfluxexamples.datah2.service;
 
-import io.github.namdo.webfluxexamples.datah2.domain.Book;
+import io.github.namdo.webfluxexamples.datah2.service.dto.BookDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -8,17 +8,17 @@ import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
-  Mono<Book> save(Book book);
+  Mono<BookDTO> save(BookDTO bookDTO);
 
-  Mono<Book> partialUpdate(Book book);
+  Mono<BookDTO> partialUpdate(BookDTO bookDTO);
 
-  Flux<Book> findAll();
+  Flux<BookDTO> findAll();
 
-  Flux<Book> findAllByPagination(Pageable pageable);
+  Flux<BookDTO> findAllByPagination(Pageable pageable);
 
   Mono<Boolean> existsById(Integer id);
 
-  Mono<Book> findOne(Integer id);
+  Mono<BookDTO> findOne(Integer id);
 
   Mono<Void> delete(Integer id);
 }

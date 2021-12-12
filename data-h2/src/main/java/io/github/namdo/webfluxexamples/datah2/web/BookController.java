@@ -6,8 +6,8 @@ import static java.util.Objects.nonNull;
 
 import java.util.Objects;
 
-import io.github.namdo.webfluxexamples.datah2.domain.Book;
 import io.github.namdo.webfluxexamples.datah2.service.BookService;
+import io.github.namdo.webfluxexamples.datah2.service.dto.BookDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import reactor.core.publisher.Flux;
@@ -28,7 +28,7 @@ public class BookController {
   private final BookService bookService;
 
   @PostMapping
-  public Mono<ResponseEntity<Book>> createBook(@RequestBody final Book book) {
+  public Mono<ResponseEntity<BookDTO>> createBook(@RequestBody final BookDTO book) {
     if (nonNull(book.getId())) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
@@ -37,7 +37,7 @@ public class BookController {
   }
 
   @PutMapping("/{id}")
-  public Mono<ResponseEntity<Book>> updateBook(@PathVariable(value = "id", required = false) final Integer id, @RequestBody final Book book) {
+  public Mono<ResponseEntity<BookDTO>> updateBook(@PathVariable(value = "id", required = false) final Integer id, @RequestBody final BookDTO book) {
     if (isNull(book.getId())) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
@@ -64,7 +64,7 @@ public class BookController {
   }
 
   @PatchMapping("/{id}")
-  public Mono<ResponseEntity<Book>> partialUpdateBook(@PathVariable(value = "id", required = false) final Integer id, @RequestBody final Book book) {
+  public Mono<ResponseEntity<BookDTO>> partialUpdateBook(@PathVariable(value = "id", required = false) final Integer id, @RequestBody final BookDTO book) {
     if (isNull(book.getId())) {
       return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
@@ -79,7 +79,7 @@ public class BookController {
             return Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST));
           }
 
-          Mono<Book> result = bookService.partialUpdate(book);
+          Mono<BookDTO> result = bookService.partialUpdate(book);
 
           return result
               .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
@@ -92,17 +92,17 @@ public class BookController {
   }
 
   @GetMapping("/all")
-  public Flux<Book> getAllBooks() {
+  public Flux<BookDTO> getAllBooks() {
     return bookService.findAll();
   }
 
   @GetMapping
-  public Flux<Book> getBooksByPagination(@RequestParam final int page, @RequestParam final int size) {
+  public Flux<BookDTO> getBooksByPagination(@RequestParam final int page, @RequestParam final int size) {
     return bookService.findAllByPagination(PageRequest.of(page, size));
   }
 
   @GetMapping("/{id}")
-  public Mono<ResponseEntity<Book>> getBook(@PathVariable final Integer id) {
+  public Mono<ResponseEntity<BookDTO>> getBook(@PathVariable final Integer id) {
     return bookService.findOne(id)
         .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
         .map(response -> ResponseEntity.ok().body(response));
