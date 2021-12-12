@@ -10,9 +10,13 @@ public interface BookService {
 
   Mono<Book> save(Book book);
 
-  Flux<Book> findAllByPagination(Pageable pageable);
+  Mono<Book> partialUpdate(Book book);
 
   Flux<Book> findAll();
+
+  Flux<Book> findAllByPagination(Pageable pageable);
+
+  Mono<Boolean> existsById(String id);
 
   Mono<Book> findOne(String id);
 

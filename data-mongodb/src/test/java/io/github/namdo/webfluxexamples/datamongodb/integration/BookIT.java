@@ -1,6 +1,7 @@
 package io.github.namdo.webfluxexamples.datamongodb.integration;
 
 import static io.github.namdo.webfluxexamples.datamongodb.utils.DataMongodbConstants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datamongodb.utils.TestConstants.BOOK_ID_123;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -35,6 +36,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Testcontainers
 class BookIT {
 
+  private static final String BOOK_API_URL_ID = BOOKS_PATH + "/{id}";
+
   private static ObjectMapper OBJECT_MAPPER;
 
   @Container
@@ -60,6 +63,19 @@ class BookIT {
   @BeforeEach
   public void setUp() {
     bookRepository.deleteAll().block();
+  }
+
+  /**
+   * Tests health check
+   **/
+  @Test
+  void testHealthCheck() {
+    webTestClient.get()
+        .uri("/actuator/health")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Void.class);
   }
 
   @Test
@@ -113,7 +129,7 @@ class BookIT {
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
-        .uri(BOOKS_PATH)
+        .uri(BOOK_API_URL_ID, BOOK_ID_123)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(body)
@@ -133,7 +149,10 @@ class BookIT {
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(body)
-        .exchange().returnResult(Book.class)
+        .exchange()
+        .expectStatus()
+        .isCreated()
+        .returnResult(Book.class)
         .getResponseBody()
         .blockFirst();
 
@@ -141,7 +160,7 @@ class BookIT {
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
-        .uri(BOOKS_PATH)
+        .uri(BOOK_API_URL_ID, newBook.getId())
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(newBook)
@@ -149,7 +168,7 @@ class BookIT {
 
     // Verify
     final Flux<Book> bookFlux = actualResponseSpec.expectStatus()
-        .isCreated()
+        .isOk()
         .returnResult(Book.class)
         .getResponseBody();
 
@@ -232,7 +251,7 @@ class BookIT {
     // Verify
     assertThat(book1).isNotNull();
     assertThat(book2).isNotNull();
-    
+
     StepVerifier.create(bookFlux)
         .expectNext(book2)
         .verifyComplete();

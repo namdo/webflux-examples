@@ -8,6 +8,8 @@ public class TestConstants {
 
   public static final String BOOK_ID_2 = "Book ID 2";
 
+  public static final String BOOK_ID_123 = "Book ID 123";
+
   public static final int PAGE = 0;
 
   public static final int SIZE = 10;

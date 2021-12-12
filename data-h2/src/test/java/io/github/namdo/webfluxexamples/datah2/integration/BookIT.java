@@ -1,6 +1,7 @@
 package io.github.namdo.webfluxexamples.datah2.integration;
 
 import static io.github.namdo.webfluxexamples.datah2.utils.Constants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.BOOK_ID_123;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -17,17 +18,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(classes = DataH2Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient(timeout = "360000")
 class BookIT {
+
+  private static final String BOOK_API_URL_ID = BOOKS_PATH + "/{id}";
 
   private static ObjectMapper OBJECT_MAPPER;
 
@@ -46,6 +50,19 @@ class BookIT {
   @BeforeEach
   public void setUp() {
     bookRepository.deleteAll().block();
+  }
+
+  /**
+   * Tests health check
+   **/
+  @Test
+  void testHealthCheck() {
+    webTestClient.get()
+        .uri("/actuator/health")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody(Void.class);
   }
 
   @Test
@@ -99,7 +116,7 @@ class BookIT {
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
-        .uri(BOOKS_PATH)
+        .uri(BOOK_API_URL_ID, BOOK_ID_123)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(body)
@@ -119,7 +136,10 @@ class BookIT {
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(body)
-        .exchange().returnResult(Book.class)
+        .exchange()
+        .expectStatus()
+        .isCreated()
+        .returnResult(Book.class)
         .getResponseBody()
         .blockFirst();
 
@@ -127,7 +147,7 @@ class BookIT {
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
-        .uri(BOOKS_PATH)
+        .uri(BOOK_API_URL_ID, newBook.getId())
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(newBook)
@@ -135,7 +155,7 @@ class BookIT {
 
     // Verify
     final Flux<Book> bookFlux = actualResponseSpec.expectStatus()
-        .isCreated()
+        .isOk()
         .returnResult(Book.class)
         .getResponseBody();
 

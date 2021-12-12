@@ -1,6 +1,7 @@
 package io.github.namdo.webfluxexamples.datamysql.integration;
 
 import static io.github.namdo.webfluxexamples.datamysql.utils.Constants.BOOKS_PATH;
+import static io.github.namdo.webfluxexamples.datamysql.utils.TestConstants.BOOK_ID_123;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
@@ -35,6 +36,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Testcontainers
 class BookIT {
 
+  private static final String BOOK_API_URL_ID = BOOKS_PATH + "/{id}";
+
   private static ObjectMapper OBJECT_MAPPER;
 
   @Container
@@ -42,11 +45,13 @@ class BookIT {
 
   @DynamicPropertySource
   static void mysqlProperties(final DynamicPropertyRegistry registry) {
-    registry.add("spring.r2dbc.url", () -> "r2dbc:mysql://"
-        + mySQLContainer.getHost() + ":" + mySQLContainer.getFirstMappedPort()
-        + "/" + mySQLContainer.getDatabaseName());
-    registry.add("spring.r2dbc.username", () -> mySQLContainer.getUsername());
-    registry.add("spring.r2dbc.password", () -> mySQLContainer.getPassword());
+    registry.add("spring.r2dbc.url", () -> mySQLContainer.getJdbcUrl().replace("jdbc", "r2dbc"));
+    registry.add("spring.r2dbc.username", mySQLContainer::getUsername);
+    registry.add("spring.r2dbc.password", mySQLContainer::getPassword);
+
+    registry.add("spring.liquibase.url", () -> mySQLContainer.getJdbcUrl());
+    registry.add("spring.liquibase.user", mySQLContainer::getUsername);
+    registry.add("spring.liquibase.password", mySQLContainer::getPassword);
   }
 
   @Autowired
@@ -130,7 +135,7 @@ class BookIT {
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
-        .uri(BOOKS_PATH)
+        .uri(BOOK_API_URL_ID, BOOK_ID_123)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(body)
@@ -150,7 +155,10 @@ class BookIT {
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(body)
-        .exchange().returnResult(Book.class)
+        .exchange()
+        .expectStatus()
+        .isCreated()
+        .returnResult(Book.class)
         .getResponseBody()
         .blockFirst();
 
@@ -158,7 +166,7 @@ class BookIT {
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
-        .uri(BOOKS_PATH)
+        .uri(BOOK_API_URL_ID, newBook.getId())
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
         .bodyValue(newBook)
@@ -166,7 +174,7 @@ class BookIT {
 
     // Verify
     final Flux<Book> bookFlux = actualResponseSpec.expectStatus()
-        .isCreated()
+        .isOk()
         .returnResult(Book.class)
         .getResponseBody();
 

@@ -18,6 +18,8 @@ public class Book {
 
   private String title;
 
+  private String description;
+
   @JsonPOJOBuilder(withPrefix = "")
   public static class Builder {
   }

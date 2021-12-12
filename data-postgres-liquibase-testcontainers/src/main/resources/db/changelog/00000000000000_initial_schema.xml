@@ -10,6 +10,7 @@
         <constraints nullable="false" primaryKey="true" primaryKeyName="book_pkey"/>
       </column>
       <column name="title" type="VARCHAR(255)"/>
+      <column name="description" type="TEXT"/>
     </createTable>
   </changeSet>
 </databaseChangeLog>
