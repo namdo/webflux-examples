@@ -1,5 +1,6 @@
 package io.github.namdo.webfluxexamples.datapgr2dbc.domain;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 @Setter
 @Builder(builderClassName = "Builder")
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(onlyExplicitlyIncluded = true)
 @JsonDeserialize(builder = Book.Builder.class)
 public class Book {
