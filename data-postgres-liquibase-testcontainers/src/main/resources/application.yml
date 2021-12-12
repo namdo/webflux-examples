@@ -15,3 +15,8 @@ spring:
     enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
+
+# swagger-ui custom path
+springdoc.swagger-ui:
+  path: "swagger-ui.html"
+  disable-swagger-default-url: true
