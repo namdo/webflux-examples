@@ -39,7 +39,7 @@ public class BookServiceImpl implements BookService {
           }
 
           if (nonNull(bookDTO.getDescription())) {
-            existingBook.setDescription(bookDTO.getTitle());
+            existingBook.setDescription(bookDTO.getDescription());
           }
 
           return existingBook;

@@ -2,5 +2,5 @@ CREATE TABLE IF NOT EXISTS book
 (
     id          SERIAL PRIMARY KEY,
     title       VARCHAR(255),
-    description TEXT
+    description VARCHAR(255)
 );

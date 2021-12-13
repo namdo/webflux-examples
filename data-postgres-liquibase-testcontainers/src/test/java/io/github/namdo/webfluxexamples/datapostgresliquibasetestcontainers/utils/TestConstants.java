@@ -4,6 +4,12 @@ public class TestConstants {
 
   public static final String TITLE = "Title";
 
+  public static final String NEW_TITLE = "New Title";
+
+  public static final String DESCRIPTION = "Description";
+
+  public static final String NEW_DESCRIPTION = "New Description";
+
   public static final Integer BOOK_ID_1 = 1;
 
   public static final Integer BOOK_ID_2 = 2;

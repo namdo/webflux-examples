@@ -2,19 +2,25 @@ package io.github.namdo.webfluxexamples.datah2.integration;
 
 import static io.github.namdo.webfluxexamples.datah2.utils.Constants.BOOKS_PATH;
 import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.BOOK_ID_123;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.DESCRIPTION;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.NEW_DESCRIPTION;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.NEW_TITLE;
+import static io.github.namdo.webfluxexamples.datah2.utils.TestConstants.TITLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.namdo.webfluxexamples.datah2.DataH2Application;
 import io.github.namdo.webfluxexamples.datah2.domain.Book;
 import io.github.namdo.webfluxexamples.datah2.repository.BookRepository;
+import io.github.namdo.webfluxexamples.datah2.service.dto.BookDTO;
+import io.github.namdo.webfluxexamples.datah2.service.mapper.BookMapper;
+import io.github.namdo.webfluxexamples.datah2.utils.TestUtils;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +28,6 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.testcontainers.shaded.org.apache.commons.io.IOUtils;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(classes = DataH2Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient(timeout = "360000")
@@ -33,23 +35,32 @@ class BookIT {
 
   private static final String BOOK_API_URL_ID = BOOKS_PATH + "/{id}";
 
-  private static ObjectMapper OBJECT_MAPPER;
+  private static final Random random = new Random();
 
-  @Autowired
-  private WebTestClient webTestClient;
+  private static final AtomicInteger count = new AtomicInteger(random.nextInt());
 
   @Autowired
   private BookRepository bookRepository;
 
-  @BeforeAll
-  public static void beforeAll() {
-    OBJECT_MAPPER = new ObjectMapper()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+  @Autowired
+  private BookMapper bookMapper;
+
+  @Autowired
+  private WebTestClient webTestClient;
+
+  private Book book;
+
+  public static Book createBook() {
+    return Book.builder()
+        .title(TITLE)
+        .description(DESCRIPTION)
+        .build();
   }
 
   @BeforeEach
   public void setUp() {
     bookRepository.deleteAll().block();
+    book = createBook();
   }
 
   /**
@@ -66,42 +77,43 @@ class BookIT {
   }
 
   @Test
-  void testCreateBookWithoutId() throws IOException {
+  void testCreateBook() throws IOException {
     // Setup
-    final String body = readJsonAsStringFromFile("title.json", getClass());
-    final Book expectedBook = OBJECT_MAPPER.readValue(body, Book.class);
+    BookDTO bookDTO = bookMapper.toDto(book);
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.post()
         .uri(BOOKS_PATH)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(body)
+        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
         .exchange();
 
     // Verify
-    final Book actualBook = actualResponseSpec.expectStatus()
+    final BookDTO actualBook = actualResponseSpec.expectStatus()
         .isCreated()
-        .returnResult(Book.class)
+        .returnResult(BookDTO.class)
         .getResponseBody()
         .blockFirst();
 
     assertThat(actualBook).isNotNull();
     assertThat(actualBook.getId()).isNotNull();
-    assertThat(actualBook.getTitle()).isEqualTo(expectedBook.getTitle());
+    assertThat(actualBook.getTitle()).isEqualTo(bookDTO.getTitle());
+    assertThat(actualBook.getDescription()).isEqualTo(bookDTO.getDescription());
   }
 
   @Test
-  void testCreateBookWithId() throws IOException {
+  void testCreateBookWithExistingId() throws IOException {
     // Setup
-    final String body = readJsonAsStringFromFile("title_id.json", getClass());
+    book.setId(1);
+    BookDTO bookDTO = bookMapper.toDto(book);
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.post()
         .uri(BOOKS_PATH)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(body)
+        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
         .exchange();
 
     // Verify
@@ -110,72 +122,10 @@ class BookIT {
   }
 
   @Test
-  void testUpdateBookWithoutId() throws IOException {
+  void testGetAllBooks() {
     // Setup
-    final String body = readJsonAsStringFromFile("title.json", getClass());
-
-    // Execute
-    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
-        .uri(BOOK_API_URL_ID, BOOK_ID_123)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept()
-        .bodyValue(body)
-        .exchange();
-
-    // Verify
-    actualResponseSpec.expectStatus()
-        .isBadRequest();
-  }
-
-  @Test
-  void testUpdateBookWithId() throws IOException {
-    // Setup
-    final String body = readJsonAsStringFromFile("title.json", getClass());
-    final Book newBook = webTestClient.post()
-        .uri(BOOKS_PATH)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept()
-        .bodyValue(body)
-        .exchange()
-        .expectStatus()
-        .isCreated()
-        .returnResult(Book.class)
-        .getResponseBody()
-        .blockFirst();
-
-    newBook.setTitle("New Title");
-
-    // Execute
-    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
-        .uri(BOOK_API_URL_ID, newBook.getId())
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept()
-        .bodyValue(newBook)
-        .exchange();
-
-    // Verify
-    final Flux<Book> bookFlux = actualResponseSpec.expectStatus()
-        .isOk()
-        .returnResult(Book.class)
-        .getResponseBody();
-
-    StepVerifier.create(bookFlux)
-        .expectNext(newBook)
-        .verifyComplete();
-  }
-
-  @Test
-  void testGetAllBooks() throws IOException {
-    // Setup
-    final String body = readJsonAsStringFromFile("title.json", getClass());
-    final Book newBook = webTestClient.post()
-        .uri(BOOKS_PATH)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept()
-        .bodyValue(body)
-        .exchange().returnResult(Book.class)
-        .getResponseBody()
-        .blockFirst();
+    Book newBook = bookRepository.save(book).block();
+    BookDTO expected = bookMapper.toDto(newBook);
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.get()
@@ -183,18 +133,18 @@ class BookIT {
         .exchange();
 
     // Verify
-    final Flux<Book> bookFlux = actualResponseSpec.expectStatus()
+    final Flux<BookDTO> bookFlux = actualResponseSpec.expectStatus()
         .isOk()
-        .returnResult(Book.class)
+        .returnResult(BookDTO.class)
         .getResponseBody();
 
     StepVerifier.create(bookFlux)
-        .expectNext(newBook)
+        .expectNext(expected)
         .verifyComplete();
   }
 
   @Test
-  void getBooksByPagination() {
+  void testGetBooksByPagination() {
     Book book1 = Book.builder()
         .title("Title1")
         .build();
@@ -223,6 +173,8 @@ class BookIT {
         .getResponseBody()
         .blockFirst();
 
+    BookDTO expected = bookMapper.toDto(book2);
+
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.get()
         .uri(uri -> uri.path(BOOKS_PATH).queryParam("page", 1)
@@ -230,9 +182,9 @@ class BookIT {
             .build())
         .exchange();
 
-    final Flux<Book> bookFlux = actualResponseSpec.expectStatus()
+    final Flux<BookDTO> bookFlux = actualResponseSpec.expectStatus()
         .isOk()
-        .returnResult(Book.class)
+        .returnResult(BookDTO.class)
         .getResponseBody();
 
     // Verify
@@ -240,22 +192,15 @@ class BookIT {
     assertThat(book2).isNotNull();
 
     StepVerifier.create(bookFlux)
-        .expectNext(book2)
+        .expectNext(expected)
         .verifyComplete();
   }
 
   @Test
-  void getBook() throws IOException {
+  void testGetBook() {
     // Setup
-    final String body = readJsonAsStringFromFile("title.json", getClass());
-    final Book newBook = webTestClient.post()
-        .uri(BOOKS_PATH)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept()
-        .bodyValue(body)
-        .exchange().returnResult(Book.class)
-        .getResponseBody()
-        .blockFirst();
+    Book newBook = bookRepository.save(book).block();
+    BookDTO expected = bookMapper.toDto(newBook);
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.get()
@@ -263,32 +208,21 @@ class BookIT {
         .exchange();
 
     // Verify
-    final Flux<Book> bookFlux = actualResponseSpec.expectStatus()
+    final Flux<BookDTO> bookFlux = actualResponseSpec.expectStatus()
         .isOk()
-        .returnResult(Book.class)
+        .returnResult(BookDTO.class)
         .getResponseBody();
 
     StepVerifier.create(bookFlux)
-        .expectNext(newBook)
+        .expectNext(expected)
         .verifyComplete();
   }
 
   @Test
-  void getBookNotFound() throws IOException {
-    // Setup
-    final String body = readJsonAsStringFromFile("title.json", getClass());
-    final Book newBook = webTestClient.post()
-        .uri(BOOKS_PATH)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept()
-        .bodyValue(body)
-        .exchange().returnResult(Book.class)
-        .getResponseBody()
-        .blockFirst();
-
+  void testGetNonExistingBook() throws IOException {
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.get()
-        .uri(BOOKS_PATH + "/{id}", 1)
+        .uri(BOOKS_PATH + "/{id}", Integer.MAX_VALUE)
         .exchange();
 
     // Verify
@@ -297,17 +231,215 @@ class BookIT {
   }
 
   @Test
-  void testDeleteBook() throws IOException {
+  void testPutNewBook() {
     // Setup
-    final String body = readJsonAsStringFromFile("title.json", getClass());
-    final Book newBook = webTestClient.post()
-        .uri(BOOKS_PATH)
+    Book newBook = bookRepository.save(book).block();
+    newBook.setTitle(NEW_TITLE);
+
+    BookDTO expected = bookMapper.toDto(newBook);
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
+        .uri(BOOK_API_URL_ID, newBook.getId())
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(body)
-        .exchange().returnResult(Book.class)
-        .getResponseBody()
-        .blockFirst();
+        .bodyValue(newBook)
+        .exchange();
+
+    // Verify
+    final Flux<BookDTO> bookFlux = actualResponseSpec.expectStatus()
+        .isOk()
+        .returnResult(BookDTO.class)
+        .getResponseBody();
+
+    StepVerifier.create(bookFlux)
+        .expectNext(expected)
+        .verifyComplete();
+  }
+
+  @Test
+  void testPutNonExistingBook() {
+    // Setup
+    book.setId(count.incrementAndGet());
+    BookDTO bookDTO = bookMapper.toDto(book);
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
+        .uri(BOOK_API_URL_ID, book.getId())
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept()
+        .bodyValue(bookDTO)
+        .exchange();
+
+    // Verify
+    actualResponseSpec.expectStatus()
+        .isBadRequest();
+  }
+
+  @Test
+  void testPutWithIdMismatchBook() throws IOException {
+    // Setup
+    book.setId(count.incrementAndGet());
+    BookDTO bookDTO = bookMapper.toDto(book);
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
+        .uri(BOOK_API_URL_ID, count.incrementAndGet())
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept()
+        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .exchange();
+
+    // Verify
+    actualResponseSpec.expectStatus()
+        .isBadRequest();
+  }
+
+  @Test
+  void testPutWithMissingIdBook() throws IOException {
+    // Setup
+    BookDTO bookDTO = bookMapper.toDto(book);
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.put()
+        .uri(BOOK_API_URL_ID, BOOK_ID_123)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept()
+        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .exchange();
+
+    // Verify
+    actualResponseSpec.expectStatus()
+        .isBadRequest();
+  }
+
+  @Test
+  void testPartialUpdateBookWithPatch() throws IOException {
+    // Setup
+    bookRepository.save(book).block();
+
+    Book partialUpdatedBook = new Book();
+    partialUpdatedBook.setId(book.getId());
+    partialUpdatedBook.setTitle(NEW_TITLE);
+
+    BookDTO expected = BookDTO.builder()
+        .id(book.getId())
+        .title(NEW_TITLE)
+        .description(DESCRIPTION)
+        .build();
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.patch()
+        .uri(BOOK_API_URL_ID, partialUpdatedBook.getId())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(TestUtils.convertObjectToJsonBytes(partialUpdatedBook))
+        .exchange();
+
+    // Verify
+    Flux<BookDTO> bookFlux = actualResponseSpec.expectStatus()
+        .isOk()
+        .returnResult(BookDTO.class)
+        .getResponseBody();
+
+    StepVerifier.create(bookFlux)
+        .expectNext(expected)
+        .verifyComplete();
+  }
+
+  @Test
+  void testFullUpdateUserEntityWithPatch() throws IOException {
+    // Setup
+    bookRepository.save(book).block();
+
+    Book partialUpdatedBook = new Book();
+    partialUpdatedBook.setId(book.getId());
+    partialUpdatedBook.setTitle(NEW_TITLE);
+    partialUpdatedBook.setDescription(NEW_DESCRIPTION);
+
+    BookDTO expected = BookDTO.builder()
+        .id(book.getId())
+        .title(NEW_TITLE)
+        .description(NEW_DESCRIPTION)
+        .build();
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.patch()
+        .uri(BOOK_API_URL_ID, partialUpdatedBook.getId())
+        .contentType(MediaType.APPLICATION_JSON)
+        .bodyValue(TestUtils.convertObjectToJsonBytes(partialUpdatedBook))
+        .exchange();
+
+    // Verify
+    Flux<BookDTO> bookFlux = actualResponseSpec.expectStatus()
+        .isOk()
+        .returnResult(BookDTO.class)
+        .getResponseBody();
+
+    StepVerifier.create(bookFlux)
+        .expectNext(expected)
+        .verifyComplete();
+  }
+
+  @Test
+  void testPatchNonExistingBook() {
+    // Setup
+    book.setId(count.incrementAndGet());
+    BookDTO bookDTO = bookMapper.toDto(book);
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.patch()
+        .uri(BOOK_API_URL_ID, book.getId())
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept()
+        .bodyValue(bookDTO)
+        .exchange();
+
+    // Verify
+    actualResponseSpec.expectStatus()
+        .isBadRequest();
+  }
+
+  @Test
+  void testPatchWithIdMismatchBook() throws IOException {
+    // Setup
+    book.setId(count.incrementAndGet());
+    BookDTO bookDTO = bookMapper.toDto(book);
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.patch()
+        .uri(BOOK_API_URL_ID, count.incrementAndGet())
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept()
+        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .exchange();
+
+    // Verify
+    actualResponseSpec.expectStatus()
+        .isBadRequest();
+  }
+
+  @Test
+  void testPatchWithMissingIdBook() throws IOException {
+    // Setup
+    BookDTO bookDTO = bookMapper.toDto(book);
+
+    // Execute
+    final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.patch()
+        .uri(BOOK_API_URL_ID, BOOK_ID_123)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept()
+        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .exchange();
+
+    // Verify
+    actualResponseSpec.expectStatus()
+        .isBadRequest();
+  }
+
+  @Test
+  void testDeleteBook() {
+    // Setup
+    Book newBook = bookRepository.save(book).block();
 
     // Execute
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.delete()
@@ -322,14 +454,6 @@ class BookIT {
         .uri(BOOKS_PATH + "/{id}", newBook.getId())
         .exchange().expectStatus()
         .isNotFound();
-  }
-
-  public static String readJsonAsStringFromFile(final String filename, final Class<?> clazz) throws IOException {
-    return IOUtils.toString(readFile(filename, clazz), StandardCharsets.UTF_8);
-  }
-
-  public static InputStream readFile(final String filename, final Class<?> clazz) {
-    return clazz.getClassLoader().getResourceAsStream(filename);
   }
 
 }

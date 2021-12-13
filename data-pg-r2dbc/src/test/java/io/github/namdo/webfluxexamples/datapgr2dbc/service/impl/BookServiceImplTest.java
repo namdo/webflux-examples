@@ -2,6 +2,9 @@ package io.github.namdo.webfluxexamples.datapgr2dbc.service.impl;
 
 import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.BOOK_ID_1;
 import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.BOOK_ID_2;
+import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.DESCRIPTION;
+import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.NEW_DESCRIPTION;
+import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.NEW_TITLE;
 import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.PAGE;
 import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.SIZE;
 import static io.github.namdo.webfluxexamples.datapgr2dbc.utils.TestConstants.TITLE;
@@ -71,6 +74,48 @@ class BookServiceImplTest {
     StepVerifier.create(actualMono)
         .expectNext(expected)
         .verifyComplete();
+  }
+
+  @Test
+  void testPartialUpdate() {
+    // Setup
+    final BookDTO bookDTO = BookDTO.builder()
+        .id(BOOK_ID_1)
+        .title(NEW_TITLE)
+        .description(NEW_DESCRIPTION)
+        .build();
+
+    final Book retrievedBook = Book.builder()
+        .id(BOOK_ID_1)
+        .title(TITLE)
+        .description(DESCRIPTION)
+        .build();
+
+    final Book savedBook = Book.builder()
+        .id(BOOK_ID_1)
+        .title(NEW_TITLE)
+        .description(NEW_DESCRIPTION)
+        .build();
+
+    final BookDTO expected = BookDTO.builder()
+        .id(BOOK_ID_1)
+        .title(NEW_TITLE)
+        .description(NEW_DESCRIPTION)
+        .build();
+
+    when(bookRepository.findById(BOOK_ID_1)).thenReturn(Mono.just(retrievedBook));
+    when(bookRepository.save(savedBook)).thenReturn(Mono.just(savedBook));
+
+    // Execute
+    final Mono<BookDTO> actualMono = bookService.partialUpdate(bookDTO);
+
+    // Verify
+    StepVerifier.create(actualMono)
+        .expectNext(expected)
+        .verifyComplete();
+
+    verify(bookRepository).findById(BOOK_ID_1);
+    verify(bookRepository).save(savedBook);
   }
 
   @Test
@@ -147,7 +192,7 @@ class BookServiceImplTest {
   }
 
   @Test
-  void findOne() {
+  void testFindOne() {
     // Setup
     final Book book = Book.builder()
         .id(BOOK_ID_1)

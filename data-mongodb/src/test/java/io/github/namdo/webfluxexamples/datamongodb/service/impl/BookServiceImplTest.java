@@ -115,7 +115,7 @@ class BookServiceImplTest {
   }
 
   @Test
-  void findOne() {
+  void testFindOne() {
     // Setup
     final Book book = Book.builder()
         .id(BOOK_ID_1)

@@ -1,5 +1,13 @@
 package io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.service.impl;
 
+import static io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants.BOOK_ID_1;
+import static io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants.BOOK_ID_2;
+import static io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants.DESCRIPTION;
+import static io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants.NEW_DESCRIPTION;
+import static io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants.NEW_TITLE;
+import static io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants.PAGE;
+import static io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants.SIZE;
+import static io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants.TITLE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -9,7 +17,6 @@ import io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.domai
 import io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.repository.BookRepository;
 import io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.service.dto.BookDTO;
 import io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.service.mapper.BookMapper;
-import io.github.namdo.webfluxexamples.datapostgresliquibasetestcontainers.utils.TestConstants;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -45,21 +52,21 @@ class BookServiceImplTest {
   void testSave() {
     // Setup
     final BookDTO bookDTO = BookDTO.builder()
-        .title(TestConstants.TITLE)
+        .title(TITLE)
         .build();
 
     final Book book = Book.builder()
-        .title(TestConstants.TITLE)
+        .title(TITLE)
         .build();
 
     final Book savedBook = Book.builder()
-        .title(TestConstants.TITLE)
-        .id(TestConstants.BOOK_ID_1)
+        .title(TITLE)
+        .id(BOOK_ID_1)
         .build();
 
     final BookDTO expected = BookDTO.builder()
-        .title(TestConstants.TITLE)
-        .id(TestConstants.BOOK_ID_1)
+        .title(TITLE)
+        .id(BOOK_ID_1)
         .build();
 
     when(bookRepository.save(any(Book.class))).thenReturn(Mono.just(savedBook));
@@ -74,26 +81,68 @@ class BookServiceImplTest {
   }
 
   @Test
+  void testPartialUpdate() {
+    // Setup
+    final BookDTO bookDTO = BookDTO.builder()
+        .id(BOOK_ID_1)
+        .title(NEW_TITLE)
+        .description(NEW_DESCRIPTION)
+        .build();
+
+    final Book retrievedBook = Book.builder()
+        .id(BOOK_ID_1)
+        .title(TITLE)
+        .description(DESCRIPTION)
+        .build();
+
+    final Book savedBook = Book.builder()
+        .id(BOOK_ID_1)
+        .title(NEW_TITLE)
+        .description(NEW_DESCRIPTION)
+        .build();
+
+    final BookDTO expected = BookDTO.builder()
+        .id(BOOK_ID_1)
+        .title(NEW_TITLE)
+        .description(NEW_DESCRIPTION)
+        .build();
+
+    when(bookRepository.findById(BOOK_ID_1)).thenReturn(Mono.just(retrievedBook));
+    when(bookRepository.save(savedBook)).thenReturn(Mono.just(savedBook));
+
+    // Execute
+    final Mono<BookDTO> actualMono = bookService.partialUpdate(bookDTO);
+
+    // Verify
+    StepVerifier.create(actualMono)
+        .expectNext(expected)
+        .verifyComplete();
+
+    verify(bookRepository).findById(BOOK_ID_1);
+    verify(bookRepository).save(savedBook);
+  }
+
+  @Test
   void testFindAll() {
     // Setup
     final BookDTO bookDTO1 = BookDTO.builder()
-        .id(TestConstants.BOOK_ID_1)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_1)
+        .title(TITLE)
         .build();
 
     final BookDTO bookDTO2 = BookDTO.builder()
-        .id(TestConstants.BOOK_ID_2)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_2)
+        .title(TITLE)
         .build();
 
     final Book book1 = Book.builder()
-        .id(TestConstants.BOOK_ID_1)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_1)
+        .title(TITLE)
         .build();
 
     final Book book2 = Book.builder()
-        .id(TestConstants.BOOK_ID_2)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_2)
+        .title(TITLE)
         .build();
 
     when(bookRepository.findAll()).thenReturn(Flux.just(book1, book2));
@@ -114,74 +163,74 @@ class BookServiceImplTest {
   void testFindAllByPagination() {
     // Setup
     final BookDTO bookDTO1 = BookDTO.builder()
-        .id(TestConstants.BOOK_ID_1)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_1)
+        .title(TITLE)
         .build();
 
     final BookDTO bookDTO2 = BookDTO.builder()
-        .id(TestConstants.BOOK_ID_2)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_2)
+        .title(TITLE)
         .build();
 
     final Book book1 = Book.builder()
-        .id(TestConstants.BOOK_ID_1)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_1)
+        .title(TITLE)
         .build();
 
     final Book book2 = Book.builder()
-        .id(TestConstants.BOOK_ID_2)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_2)
+        .title(TITLE)
         .build();
 
-    when(bookRepository.findAllBy(PageRequest.of(TestConstants.PAGE, TestConstants.SIZE))).thenReturn(Flux.just(book1, book2));
+    when(bookRepository.findAllBy(PageRequest.of(PAGE, SIZE))).thenReturn(Flux.just(book1, book2));
 
     // Execute
-    final Flux<BookDTO> bookFlux = bookService.findAllByPagination(PageRequest.of(TestConstants.PAGE, TestConstants.SIZE));
+    final Flux<BookDTO> bookFlux = bookService.findAllByPagination(PageRequest.of(PAGE, SIZE));
 
     // Verify
     StepVerifier.create(bookFlux)
         .expectNext(bookDTO1)
         .expectNext(bookDTO2)
         .verifyComplete();
-    verify(bookRepository).findAllBy(PageRequest.of(TestConstants.PAGE, TestConstants.SIZE));
+    verify(bookRepository).findAllBy(PageRequest.of(PAGE, SIZE));
   }
 
   @Test
-  void findOne() {
+  void testFindOne() {
     // Setup
     final Book book = Book.builder()
-        .id(TestConstants.BOOK_ID_1)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_1)
+        .title(TITLE)
         .build();
 
     final BookDTO bookDTO = BookDTO.builder()
-        .id(TestConstants.BOOK_ID_1)
-        .title(TestConstants.TITLE)
+        .id(BOOK_ID_1)
+        .title(TITLE)
         .build();
 
-    when(bookRepository.findById(TestConstants.BOOK_ID_1)).thenReturn(Mono.just(book));
+    when(bookRepository.findById(BOOK_ID_1)).thenReturn(Mono.just(book));
 
     // Execute
-    final Mono<BookDTO> bookMono = bookService.findOne(TestConstants.BOOK_ID_1);
+    final Mono<BookDTO> bookMono = bookService.findOne(BOOK_ID_1);
 
     // Verify
     StepVerifier.create(bookMono)
         .expectNext(bookDTO)
         .verifyComplete();
-    verify(bookRepository).findById(TestConstants.BOOK_ID_1);
+    verify(bookRepository).findById(BOOK_ID_1);
   }
 
   @Test
   void testDelete() {
-    when(bookRepository.deleteById(TestConstants.BOOK_ID_1)).thenReturn(Mono.empty());
+    when(bookRepository.deleteById(BOOK_ID_1)).thenReturn(Mono.empty());
 
     // Execute
-    final Mono<Void> voidMono = bookService.delete(TestConstants.BOOK_ID_1);
+    final Mono<Void> voidMono = bookService.delete(BOOK_ID_1);
 
     // Verify
     StepVerifier.create(voidMono)
         .verifyComplete();
 
-    verify(bookRepository).deleteById(TestConstants.BOOK_ID_1);
+    verify(bookRepository).deleteById(BOOK_ID_1);
   }
 }
