@@ -17,7 +17,6 @@ import io.github.namdo.webfluxexamples.datah2.domain.Book;
 import io.github.namdo.webfluxexamples.datah2.repository.BookRepository;
 import io.github.namdo.webfluxexamples.datah2.service.dto.BookDTO;
 import io.github.namdo.webfluxexamples.datah2.service.mapper.BookMapper;
-import io.github.namdo.webfluxexamples.datah2.utils.TestUtils;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -28,6 +27,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 
 @SpringBootTest(classes = DataH2Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient(timeout = "360000")
@@ -86,7 +86,7 @@ class BookIT {
         .uri(BOOKS_PATH)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .body(BodyInserters.fromValue(bookDTO))
         .exchange();
 
     // Verify
@@ -113,7 +113,7 @@ class BookIT {
         .uri(BOOKS_PATH)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .body(BodyInserters.fromValue(bookDTO))
         .exchange();
 
     // Verify
@@ -287,7 +287,7 @@ class BookIT {
         .uri(BOOK_API_URL_ID, count.incrementAndGet())
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .body(BodyInserters.fromValue(bookDTO))
         .exchange();
 
     // Verify
@@ -305,7 +305,7 @@ class BookIT {
         .uri(BOOK_API_URL_ID, BOOK_ID_123)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .body(BodyInserters.fromValue(bookDTO))
         .exchange();
 
     // Verify
@@ -332,7 +332,7 @@ class BookIT {
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.patch()
         .uri(BOOK_API_URL_ID, partialUpdatedBook.getId())
         .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(TestUtils.convertObjectToJsonBytes(partialUpdatedBook))
+        .body(BodyInserters.fromValue(partialUpdatedBook))
         .exchange();
 
     // Verify
@@ -366,7 +366,7 @@ class BookIT {
     final WebTestClient.ResponseSpec actualResponseSpec = webTestClient.patch()
         .uri(BOOK_API_URL_ID, partialUpdatedBook.getId())
         .contentType(MediaType.APPLICATION_JSON)
-        .bodyValue(TestUtils.convertObjectToJsonBytes(partialUpdatedBook))
+        .body(BodyInserters.fromValue(partialUpdatedBook))
         .exchange();
 
     // Verify
@@ -410,7 +410,7 @@ class BookIT {
         .uri(BOOK_API_URL_ID, count.incrementAndGet())
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .body(BodyInserters.fromValue(bookDTO))
         .exchange();
 
     // Verify
@@ -428,7 +428,7 @@ class BookIT {
         .uri(BOOK_API_URL_ID, BOOK_ID_123)
         .contentType(MediaType.APPLICATION_JSON)
         .accept()
-        .bodyValue(TestUtils.convertObjectToJsonBytes(bookDTO))
+        .body(BodyInserters.fromValue(bookDTO))
         .exchange();
 
     // Verify
