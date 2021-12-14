@@ -26,11 +26,10 @@ public abstract class AbstractWebClientConfig {
 
   public WebClient createWebClient(final String baseUrl, final Integer connectTimeout, final Integer readTimeout, final Integer writeTimeout, final boolean logRequest) {
     final HttpClient httpClient = HttpClient.create()
-        .tcpConfiguration(client ->
-            client.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout)
-                .doOnConnected(conn -> conn
-                    .addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS))
-                    .addHandlerLast(new WriteTimeoutHandler(writeTimeout, TimeUnit.MILLISECONDS))));
+        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout)
+        .doOnConnected(connection -> connection
+            .addHandlerLast(new ReadTimeoutHandler(readTimeout, TimeUnit.MILLISECONDS))
+            .addHandlerLast(new WriteTimeoutHandler(writeTimeout, TimeUnit.MILLISECONDS)));
 
     builder.baseUrl(baseUrl)
         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
