@@ -1,0 +1,8 @@
+server:
+  port: 7070
+bookservice:
+  baseUrl: http://localhost:8080/books
+  conectTimeout: 5000
+  readTimeout: 5000
+  writeTimeout: 5000
+  log: true
