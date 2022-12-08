@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.6.1</version>
+    <version>3.0.0</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>io.github.namdo.webfluxexamples</groupId>
@@ -14,8 +14,8 @@
   <name>webclient-server</name>
   <description>webclient-server</description>
   <properties>
-    <java.version>11</java.version>
-    <testcontainers.version>1.16.2</testcontainers.version>
+    <java.version>19</java.version>
+    <testcontainers.version>1.17.6</testcontainers.version>
   </properties>
   <dependencies>
     <dependency>
@@ -42,7 +42,7 @@
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-webflux-ui</artifactId>
-      <version>1.5.13</version>
+      <version>1.6.13</version>
     </dependency>
 
     <dependency>
@@ -52,7 +52,7 @@
       <optional>true</optional>
     </dependency>
     <dependency>
-      <groupId>io.r2dbc</groupId>
+      <groupId>org.postgresql</groupId>
       <artifactId>r2dbc-postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
