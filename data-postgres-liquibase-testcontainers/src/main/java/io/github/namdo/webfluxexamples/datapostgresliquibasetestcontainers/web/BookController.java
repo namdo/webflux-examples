@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping(BOOKS_PATH)
 @Log4j2
 @RequiredArgsConstructor
 public class BookController {
