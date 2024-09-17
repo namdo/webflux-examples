@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/blog
+      uri: mongodb://localhost:27017/book
 
 # swagger-ui custom path
 springdoc.swagger-ui:
